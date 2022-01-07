@@ -5,6 +5,8 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <queue>
+
 using namespace std;
 int MAX = 3;
 
@@ -18,7 +20,7 @@ class Node {
    public:
   Node();
 };
-
+queue<Node*> q;
 // BP tree
 class BPTree {
   Node *root;
@@ -225,15 +227,22 @@ Node *BPTree::findParent(Node *cursor, Node *child) {
 // Print the tree
 void BPTree::display(Node *cursor) {
   if (cursor != NULL) {
+    q.push(cursor);
+    cout << "hi";
     for (int i = 0; i < cursor->size; i++) {
       cout << cursor->key[i] << " ";
     }
     cout << "\n";
-    if (cursor->IS_LEAF != true) {
-      for (int i = 0; i < cursor->size + 1; i++) {
-        display(cursor->ptr[i]);
-        cout << "\n";
+    if (q.front()->IS_LEAF != true) {
+      for (int i = 0; i < q.front()->size + 1; i++) {
+        q.push(q.front()->ptr[i]);
       }
+      // for(int i = 0; i < q.front()->size; i++) {
+      //   cout << q.front()->key[i] << " ";
+      // }
+      // cout << "\n";
+      q.pop();
+      display(q.front());
     }
   }
 }
@@ -277,8 +286,10 @@ int main() {
   
 	cout << "please type the max degree: ";
 	cin >> MAX;
-  if(MAX <= 2){
-    cout << "max degree should bigger than 2";
+  while(MAX <= 2) {
+    cout << "max degree should bigger than 2\n";
+    cout << "please type the max degree: ";
+    cin >> MAX;
   }
 	MAX --;
 	BPTree node;
@@ -287,7 +298,6 @@ int main() {
   int* array = &inputValue[0];
 	// int array[] = {5,15,25,35,45, 55, 40, 30, 20};
 	int arr_size = inputValue.size();
-  cout << inputValue.size();
 	bubble_sort(array, arr_size);
 	
 	for(int i = 0 ; i < arr_size; i ++ ){
