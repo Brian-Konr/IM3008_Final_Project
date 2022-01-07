@@ -4,8 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <vector>
 using namespace std;
-int MAX = 3; // need change
+int MAX = 3;
 
 // BP node
 class Node {
@@ -255,12 +256,33 @@ void bubble_sort(int array[], int n) {
 }
 
 int main() {
+  // read file
+  string filename("input.txt");
+  int number;
+  vector<int> inputValue;
+
+  ifstream input_file(filename);
+
+  if (!input_file.is_open()) {
+        cerr << "Could not open the file - '"
+             << filename << "'" << endl;
+        return EXIT_FAILURE;
+    }
+
+    while (input_file >> number) {
+        inputValue.push_back(number);
+  }
+
+  //end reading
+  
 	cout << "please type the max degree: ";
 	cin >> MAX;
 	MAX --;
 	BPTree node;
 	
-	int array[] = {5,15,25,35,45, 55, 40, 30, 20};
+
+  int* array = &inputValue[0];
+	// int array[] = {5,15,25,35,45, 55, 40, 30, 20};
 	bubble_sort(array, 9);
 	for (int i=0; i<9; i++) {
         printf("%d ", array[i]);
@@ -270,14 +292,5 @@ int main() {
 	for(int i = 0 ; i < 9 ; i ++ ){
 		node.insert(array[i]);
 	}
-//	node.insert(array[0]);
-//	node.insert(15);
-//	node.insert(25);
-//	node.insert(35);
-//	node.insert(45);
-//	node.insert(55);
-//	node.insert(40);
-//	node.insert(30);
-//	node.insert(20);
 	node.display(node.getRoot());
 }
