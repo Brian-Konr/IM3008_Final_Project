@@ -285,11 +285,14 @@ int main() {
 	
 
   int* array = &inputValue[0];
-	int arr_size = sizeof(array)/sizeof(array[0]);
+	// int array[] = {5,15,25,35,45, 55, 40, 30, 20};
+	int arr_size = inputValue.size();
+  cout << inputValue.size();
 	bubble_sort(array, arr_size);
 	
 	for(int i = 0 ; i < arr_size; i ++ ){
 		node.insert(array[i]);
 	}
+  
 	node.display(node.getRoot());
 }
