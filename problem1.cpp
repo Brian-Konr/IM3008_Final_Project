@@ -272,6 +272,27 @@ void bubble_sort(int array[], int n) {
 }
 
 int main() {
+
+  cout << "please type the max degree: ";
+  cin >> MAX;
+  while(MAX <= 2) {
+    cout << "max degree should bigger than 2\n";
+    cout << "please type the max degree: ";
+    cin >> MAX;
+  }
+  MAX --;
+
+  cout << "Please choose the insertion method\n";
+  cout << "1: Insert the value one by one\n";
+  cout << "2: Build the B+ Tree bottom-up\n";
+
+  int method = 2; // default is using method 2
+  cin >> method;
+  while(method != 1 && method != 2) {
+    cout << "Please enter 1 or 2 only!!\n";
+    cin >> method;
+  }
+
   // read file
   string filename("input.txt");
   int number;
@@ -290,22 +311,13 @@ int main() {
   }
 
   //end reading
-  
-	cout << "please type the max degree: ";
-  cin >> MAX;
-  while(MAX <= 2) {
-    cout << "max degree should bigger than 2\n";
-    cout << "please type the max degree: ";
-    cin >> MAX;
-  }
-  MAX --;
 	BPTree node;
 	
 
   int* array = &inputValue[0];
-	// int array[] = {5,15,25,35,45, 55, 40, 30, 20};
 	int arr_size = inputValue.size();
-	bubble_sort(array, arr_size);
+
+  if(method == 2) bubble_sort(array, arr_size);
 	
 	for(int i = 0 ; i < arr_size; i ++ ){
 		node.insert(array[i]);
