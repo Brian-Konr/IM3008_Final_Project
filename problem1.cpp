@@ -231,6 +231,7 @@ void BPTree::display(Node *cursor) {
     if (cursor->IS_LEAF != true) {
       for (int i = 0; i < cursor->size + 1; i++) {
         display(cursor->ptr[i]);
+        cout << "\n";
       }
     }
   }
