@@ -6,21 +6,20 @@
 #include <sstream>
 #include <vector>
 #include <queue>
-
 using namespace std;
 int MAX = 3;
 
 // BP node
 class Node {
   bool IS_LEAF;
-  int *key, size;
+  int *key, size, height;
   Node **ptr;
   friend class BPTree;
 
    public:
   Node();
 };
-queue<Node*> q;
+
 // BP tree
 class BPTree {
   Node *root;
@@ -226,26 +225,34 @@ Node *BPTree::findParent(Node *cursor, Node *child) {
 
 // Print the tree
 void BPTree::display(Node *cursor) {
-  if (cursor != NULL) {
-    q.push(cursor);
-    cout << "hi";
-    for (int i = 0; i < cursor->size; i++) {
-      cout << cursor->key[i] << " ";
+  queue<Node*> q;
+  cursor -> height = 0;
+  q.push(cursor);
+  int current_h = 0;
+ 
+  // cout << "current -> key [i]: " << cursor -> key [0] << "\n";
+  while(!q.empty()){
+    Node* current = q.front();
+    if(current -> height > current_h){
+      current_h++;
+      cout << "\n";
     }
-    cout << "\n";
-    if (q.front()->IS_LEAF != true) {
-      for (int i = 0; i < q.front()->size + 1; i++) {
-        q.push(q.front()->ptr[i]);
+    cout << "|" ;
+    for (int i = 0; i < current->size; i++) {
+      cout << " " << current -> key [i] << " ";
+    }
+    cout << "|" ;
+    
+    q.pop();
+    if (current->IS_LEAF != true) {
+      for (int i = 0; i < current->size+1; i++) {
+        current -> ptr[i] -> height = current -> height+1;
+        q.push(current -> ptr[i]);
       }
-      // for(int i = 0; i < q.front()->size; i++) {
-      //   cout << q.front()->key[i] << " ";
-      // }
-      // cout << "\n";
-      q.pop();
-      display(q.front());
     }
   }
 }
+
 
 // Get the root
 Node *BPTree::getRoot() {
@@ -285,13 +292,13 @@ int main() {
   //end reading
   
 	cout << "please type the max degree: ";
-	cin >> MAX;
+  cin >> MAX;
   while(MAX <= 2) {
     cout << "max degree should bigger than 2\n";
     cout << "please type the max degree: ";
     cin >> MAX;
   }
-	MAX --;
+  MAX --;
 	BPTree node;
 	
 
@@ -303,6 +310,6 @@ int main() {
 	for(int i = 0 ; i < arr_size; i ++ ){
 		node.insert(array[i]);
 	}
-  
+
 	node.display(node.getRoot());
 }
