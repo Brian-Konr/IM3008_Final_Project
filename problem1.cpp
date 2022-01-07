@@ -276,19 +276,18 @@ int main() {
   
 	cout << "please type the max degree: ";
 	cin >> MAX;
+  if(MAX <= 2){
+    cout << "max degree should bigger than 2";
+  }
 	MAX --;
 	BPTree node;
 	
 
   int* array = &inputValue[0];
-	// int array[] = {5,15,25,35,45, 55, 40, 30, 20};
-	bubble_sort(array, 9);
-	for (int i=0; i<9; i++) {
-        printf("%d ", array[i]);
-    }
-    cout << " end \n";
+	int arr_size = sizeof(array)/sizeof(array[0]);
+	bubble_sort(array, arr_size);
 	
-	for(int i = 0 ; i < 9 ; i ++ ){
+	for(int i = 0 ; i < arr_size; i ++ ){
 		node.insert(array[i]);
 	}
 	node.display(node.getRoot());
