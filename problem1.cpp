@@ -5,13 +5,14 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <queue>
 using namespace std;
 int MAX = 3;
 
 // BP node
 class Node {
   bool IS_LEAF;
-  int *key, size;
+  int *key, size, height;
   Node **ptr;
   friend class BPTree;
 
@@ -224,18 +225,34 @@ Node *BPTree::findParent(Node *cursor, Node *child) {
 
 // Print the tree
 void BPTree::display(Node *cursor) {
-  if (cursor != NULL) {
-    for (int i = 0; i < cursor->size; i++) {
-      cout << cursor->key[i] << " ";
+  queue<Node*> q;
+  cursor -> height = 0;
+  q.push(cursor);
+  int current_h = 0;
+ 
+  // cout << "current -> key [i]: " << cursor -> key [0] << "\n";
+  while(!q.empty()){
+    Node* current = q.front();
+    if(current -> height > current_h){
+      current_h++;
+      cout << "\n";
     }
-    cout << "\n";
-    if (cursor->IS_LEAF != true) {
-      for (int i = 0; i < cursor->size + 1; i++) {
-        display(cursor->ptr[i]);
+    cout << "|" ;
+    for (int i = 0; i < current->size; i++) {
+      cout << " " << current -> key [i] << " ";
+    }
+    cout << "|" ;
+    
+    q.pop();
+    if (current->IS_LEAF != true) {
+      for (int i = 0; i < current->size+1; i++) {
+        current -> ptr[i] -> height = current -> height+1;
+        q.push(current -> ptr[i]);
       }
     }
   }
 }
+
 
 // Get the root
 Node *BPTree::getRoot() {
@@ -275,23 +292,24 @@ int main() {
   //end reading
   
 	cout << "please type the max degree: ";
-	cin >> MAX;
-  if(MAX <= 2){
-    cout << "max degree should bigger than 2";
+  cin >> MAX;
+  while(MAX <= 2) {
+    cout << "max degree should bigger than 2\n";
+    cout << "please type the max degree: ";
+    cin >> MAX;
   }
-	MAX --;
+  MAX --;
 	BPTree node;
 	
 
   int* array = &inputValue[0];
 	// int array[] = {5,15,25,35,45, 55, 40, 30, 20};
 	int arr_size = inputValue.size();
-  cout << inputValue.size();
 	bubble_sort(array, arr_size);
 	
 	for(int i = 0 ; i < arr_size; i ++ ){
 		node.insert(array[i]);
 	}
-  
+
 	node.display(node.getRoot());
 }
