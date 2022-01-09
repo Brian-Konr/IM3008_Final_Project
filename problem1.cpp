@@ -194,13 +194,13 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
       virtualPtr[i] = cursor->ptr[i];
     }
     int i = 0, j;
-    while (x >= virtualKey[i] && i < MAX) // not sure
+    while (x >= virtualKey[i] && i < MAX)
       i++;
     for (int j = MAX + 1; j > i; j--) {
       virtualKey[j] = virtualKey[j - 1];
     }
     virtualKey[i] = x;
-    // // // debug
+    // // debug
     // cout << "virtualKey ------------\n";
     // for (int i = 0; i < MAX+1; i++) {
     //   cout << virtualKey[i] << " ";
@@ -218,10 +218,8 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     cursor->size = (MAX + 1) / 2;
     newInternal->size = MAX - (MAX + 1) / 2;
     for (i = 0; i < cursor->size; i++) {
-      // cout << virtualKey[i] << "\n";
       cursor->key[i] = virtualKey[i];
     }
-    // cout << cursor->key[0] << "\n";
     for (i = 0; i < cursor->size + 1; i++) {
       cursor->ptr[i] = virtualPtr[i];
     }
@@ -233,7 +231,7 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     }
     if (cursor == root) {
       Node *newRoot = new Node;
-      newRoot->key[0] = cursor->key[cursor->size];
+      newRoot->key[0] = virtualKey[cursor->size];
       newRoot->ptr[0] = cursor;
       newRoot->ptr[1] = newInternal;
       newRoot->IS_LEAF = false;
