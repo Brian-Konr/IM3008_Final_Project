@@ -107,7 +107,9 @@ void BPTree::insert(int x) {
       cursor->ptr[cursor->size - 1] = NULL;
     } else {
       Node *newLeaf = new Node;
-      int virtualNode[MAX + 1];
+      // 先把x插入
+      // int virtualNode[MAX + 1];
+      vector<int> virtualNode(MAX+1);
       for (int i = 0; i < MAX; i++) {
         virtualNode[i] = cursor->key[i];
       }
@@ -118,6 +120,12 @@ void BPTree::insert(int x) {
         virtualNode[j] = virtualNode[j - 1];
       }
       virtualNode[i] = x;
+      // // debug
+      // for (int i = 0; i < MAX+1; i++) {
+      //   cout << virtualNode[i] << " ";
+      // }
+      // cout << "\n";
+
       newLeaf->IS_LEAF = true;
       cursor->size = (MAX + 1) / 2;
       newLeaf->size = MAX + 1 - (MAX + 1) / 2;
@@ -130,6 +138,21 @@ void BPTree::insert(int x) {
       for (i = 0, j = cursor->size; i < newLeaf->size; i++, j++) {
         newLeaf->key[i] = virtualNode[j];
       }
+
+      // // debug
+      // cout << "cursor ------------\n";
+      // for (int i = 0; i < cursor->size; i++) {
+      //   cout << cursor->key[i] << " ";
+      // }
+      // cout << "\n";
+
+      // // debug
+      // cout << "newLeaf ------------\n";
+      // for (i = 0, j = cursor->size; i < newLeaf->size; i++, j++) {
+      //   cout << newLeaf->key[i] << " ";
+      // }
+      // cout << "\n";
+
       if (cursor == root) {
         Node *newRoot = new Node;
         newRoot->key[0] = newLeaf->key[0];
@@ -149,7 +172,7 @@ void BPTree::insert(int x) {
 void BPTree::insertInternal(int x, Node *cursor, Node *child) {
   if (cursor->size < MAX) {
     int i = 0;
-    while (x > cursor->key[i] && i < cursor->size)
+    while (x >= cursor->key[i] && i < cursor->size)
       i++;
     for (int j = cursor->size; j > i; j--) {
       cursor->key[j] = cursor->key[j - 1];
@@ -162,8 +185,8 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     cursor->ptr[i + 1] = child;
   } else {
     Node *newInternal = new Node;
-    int virtualKey[MAX + 1];
-    Node *virtualPtr[MAX + 2];
+    vector<int> virtualKey(MAX+1);
+    vector<Node *> virtualPtr(MAX+2);
     for (int i = 0; i < MAX; i++) {
       virtualKey[i] = cursor->key[i];
     }
@@ -171,19 +194,37 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
       virtualPtr[i] = cursor->ptr[i];
     }
     int i = 0, j;
-    while (x > virtualKey[i] && i < MAX)
+    while (x >= virtualKey[i] && i < MAX) // not sure
       i++;
     for (int j = MAX + 1; j > i; j--) {
       virtualKey[j] = virtualKey[j - 1];
     }
     virtualKey[i] = x;
+    // // // debug
+    // cout << "virtualKey ------------\n";
+    // for (int i = 0; i < MAX+1; i++) {
+    //   cout << virtualKey[i] << " ";
+    // }
+    // cout << "\n";
+
     for (int j = MAX + 2; j > i + 1; j--) {
       virtualPtr[j] = virtualPtr[j - 1];
     }
     virtualPtr[i + 1] = child;
+    // 以上插入virtual node完畢
+
+    // 以下做splitting
     newInternal->IS_LEAF = false;
     cursor->size = (MAX + 1) / 2;
     newInternal->size = MAX - (MAX + 1) / 2;
+    for (i = 0; i < cursor->size; i++) {
+      // cout << virtualKey[i] << "\n";
+      cursor->key[i] = virtualKey[i];
+    }
+    // cout << cursor->key[0] << "\n";
+    for (i = 0; i < cursor->size + 1; i++) {
+      cursor->ptr[i] = virtualPtr[i];
+    }
     for (i = 0, j = cursor->size + 1; i < newInternal->size; i++, j++) {
       newInternal->key[i] = virtualKey[j];
     }
@@ -318,9 +359,21 @@ int main() {
 	int arr_size = inputValue.size();
 
   if(method == 2) bubble_sort(array, arr_size);
+
+  // // debug
+  // for(int i = 0 ; i < arr_size; i ++ ){
+	// 	cout << array[i] << " ";
+	// }
+  // cout << "\n";
 	
 	for(int i = 0 ; i < arr_size; i ++ ){
+    // // debug
+    // cout << array[i] << "\n";
 		node.insert(array[i]);
+    // // debug
+    // cout << "\n--------------------\n";
+    // node.display(node.getRoot());
+    // cout << "\n--------------------\n";
 	}
 
 	node.display(node.getRoot());
