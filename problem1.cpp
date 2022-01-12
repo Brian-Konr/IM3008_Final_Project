@@ -6,18 +6,19 @@
 #include <sstream>
 #include <vector>
 #include <queue>
+#include <math.h>
 using namespace std;
 int MAX = 3;
 
 // BP node
 class Node {
   bool IS_LEAF;
-  int *key, size, height;
   Node **ptr;
   friend class BPTree;
 
    public:
   Node();
+  int *key, size, height;
 };
 
 // BP tree
@@ -165,6 +166,20 @@ void BPTree::insert(int x) {
         insertInternal(newLeaf->key[0], parent, newLeaf);
       }
     }
+  }
+}
+
+void BPTree::insertBottom(vector<Node*> nodeVector) {
+  if (root == NULL) {
+    root = new Node;
+    root->key[0] = nodeVector[1]->key[0];
+    root->IS_LEAF = false;
+    root->size = 1;
+    root->ptr[0] = nodeVector[0];
+    root->ptr[1] = nodeVector[1];
+  }
+  else {
+
   }
 }
 
@@ -356,23 +371,42 @@ int main() {
   int* array = &inputValue[0];
 	int arr_size = inputValue.size();
 
-  if(method == 2) bubble_sort(array, arr_size);
+  if(method == 2) {
+    bubble_sort(array, arr_size);
+    vector<Node*> leafNodes(ceil(arr_size / MAX));
+    int count = 0;
 
-  // // debug
-  // for(int i = 0 ; i < arr_size; i ++ ){
-	// 	cout << array[i] << " ";
-	// }
-  // cout << "\n";
+    for(int i = 0; i < ceil(arr_size / MAX); i++) {
+      Node *newNode = new Node;
+      
+      for(int j = 0; j < MAX; j ++){
+        if(count < arr_size) {
+          newNode->key[j] = array[count];
+          count++;
+        }
+      }
+
+      leafNodes[i] = newNode;
+    }
+
+  } else {
+    // // debug
+    // for(int i = 0 ; i < arr_size; i ++ ){
+    // 	cout << array[i] << " ";
+    // }
+    // cout << "\n";
 	
-	for(int i = 0 ; i < arr_size; i ++ ){
-    // // debug
-    // cout << array[i] << "\n";
-		node.insert(array[i]);
-    // // debug
-    // cout << "\n--------------------\n";
-    // node.display(node.getRoot());
-    // cout << "\n--------------------\n";
-	}
+    for(int i = 0 ; i < arr_size; i ++ ){
+      // // debug
+      // cout << array[i] << "\n";
+      node.insert(array[i]);
+      // // debug
+      // cout << "\n--------------------\n";
+      // node.display(node.getRoot());
+      // cout << "\n--------------------\n";
+    }
+	  node.display(node.getRoot());
+  }
 
-	node.display(node.getRoot());
+
 }
