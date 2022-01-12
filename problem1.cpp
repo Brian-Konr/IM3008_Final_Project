@@ -1,4 +1,4 @@
-// Searching on a B+ tree in C++
+// Building a B+ tree in C++
 
 #include <climits>
 #include <fstream>
@@ -30,7 +30,6 @@ class BPTree {
 
    public:
   BPTree();
-  void search(int);
   void insert(int);
   void display(Node *);
   Node *getRoot();
@@ -46,33 +45,6 @@ BPTree::BPTree() {
   root = NULL;
 }
 
-// Search operation
-void BPTree::search(int x) {
-  if (root == NULL) {
-    cout << "Tree is empty\n";
-  } else {
-    Node *cursor = root;
-    while (cursor->IS_LEAF == false) {
-      for (int i = 0; i < cursor->size; i++) {
-        if (x < cursor->key[i]) {
-          cursor = cursor->ptr[i];
-          break;
-        }
-        if (i == cursor->size - 1) {
-          cursor = cursor->ptr[i + 1];
-          break;
-        }
-      }
-    }
-    for (int i = 0; i < cursor->size; i++) {
-      if (cursor->key[i] == x) {
-        cout << "Found\n";
-        return;
-      }
-    }
-    cout << "Not found\n";
-  }
-}
 
 // Insert Operation
 void BPTree::insert(int x) {
