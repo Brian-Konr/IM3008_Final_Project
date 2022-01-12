@@ -12,19 +12,20 @@ int MAX = 3;
 
 // BP node
 class Node {
-  bool IS_LEAF;
-  Node **ptr;
   friend class BPTree;
 
    public:
   Node();
   int *key, size, height;
+  bool IS_LEAF;
+  Node **ptr;
 };
 
 // BP tree
 class BPTree {
   Node *root;
   void insertInternal(int, Node *, Node *);
+  Node* insertInternalBottom(int, Node *, Node *);
   Node *findParent(Node *, Node *);
 
    public:
@@ -33,6 +34,7 @@ class BPTree {
   void insert(int);
   void display(Node *);
   Node *getRoot();
+  void insertBottom(vector<Node*> nodeVector);
 };
 
 Node::Node() {
@@ -170,17 +172,21 @@ void BPTree::insert(int x) {
 }
 
 void BPTree::insertBottom(vector<Node*> nodeVector) {
-  if (root == NULL) {
-    root = new Node;
-    root->key[0] = nodeVector[1]->key[0];
-    root->IS_LEAF = false;
-    root->size = 1;
-    root->ptr[0] = nodeVector[0];
-    root->ptr[1] = nodeVector[1];
+  // init the first tree
+  root = new Node;
+  root->key[0] = nodeVector[1]->key[0];
+  root->IS_LEAF = false;
+  root->size = 1;
+  root->ptr[0] = nodeVector[0];
+  root->ptr[1] = nodeVector[1];
+  Node* insertedNode = root;
+  
+  // insert rest node
+  for(int i = 2; i < nodeVector.size(); i ++){
+    insertedNode = insertInternalBottom(nodeVector[i]->key[0], insertedNode, nodeVector[i]);
   }
-  else {
-
-  }
+  
+  
 }
 
 // Insert Operation
@@ -257,6 +263,86 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     }
   }
 }
+
+Node* BPTree::insertInternalBottom(int x, Node *cursor, Node *child) {
+  if (cursor->size < MAX) {
+    int i = 0;
+    while (x >= cursor->key[i] && i < cursor->size){
+      i++;
+    }
+    for (int j = cursor->size; j > i; j--) {
+      cursor->key[j] = cursor->key[j - 1];
+    }
+    for (int j = cursor->size + 1; j > i + 1; j--) {
+      cursor->ptr[j] = cursor->ptr[j - 1];
+    }
+    cursor->key[i] = x;
+    cursor->size++;
+    cursor->ptr[i + 1] = child;
+
+    return cursor;
+  } else {
+    Node *newInternal = new Node;
+    vector<int> virtualKey(MAX+1);
+    vector<Node *> virtualPtr(MAX+2);
+    for (int i = 0; i < MAX; i++) {
+      virtualKey[i] = cursor->key[i];
+    }
+    for (int i = 0; i < MAX + 1; i++) {
+      virtualPtr[i] = cursor->ptr[i];
+    }
+    int i = 0, j;
+    while (x >= virtualKey[i] && i < MAX)
+      i++;
+    for (int j = MAX + 1; j > i; j--) {
+      virtualKey[j] = virtualKey[j - 1];
+    }
+    virtualKey[i] = x;
+    // // debug
+    // cout << "virtualKey ------------\n";
+    // for (int i = 0; i < MAX+1; i++) {
+    //   cout << virtualKey[i] << " ";
+    // }
+    // cout << "\n";
+
+    for (int j = MAX + 2; j > i + 1; j--) {
+      virtualPtr[j] = virtualPtr[j - 1];
+    }
+    virtualPtr[i + 1] = child;
+    // 以上插入virtual node完畢
+
+    // 以下做splitting
+    newInternal->IS_LEAF = false;
+    cursor->size = (MAX + 1) / 2;
+    newInternal->size = MAX - (MAX + 1) / 2;
+    for (i = 0; i < cursor->size; i++) {
+      cursor->key[i] = virtualKey[i];
+    }
+    for (i = 0; i < cursor->size + 1; i++) {
+      cursor->ptr[i] = virtualPtr[i];
+    }
+    for (i = 0, j = cursor->size + 1; i < newInternal->size; i++, j++) {
+      newInternal->key[i] = virtualKey[j];
+    }
+    for (i = 0, j = cursor->size + 1; i < newInternal->size + 1; i++, j++) {
+      newInternal->ptr[i] = virtualPtr[j];
+    }
+    if (cursor == root) {
+      Node *newRoot = new Node;
+      newRoot->key[0] = virtualKey[cursor->size];
+      newRoot->ptr[0] = cursor;
+      newRoot->ptr[1] = newInternal;
+      newRoot->IS_LEAF = false;
+      newRoot->size = 1;
+      root = newRoot;
+    } else {
+      insertInternalBottom(cursor->key[cursor->size], findParent(root, cursor), newInternal);
+    }
+
+    return newInternal;
+  }
+}
+
 
 // Find the parent
 Node *BPTree::findParent(Node *cursor, Node *child) {
@@ -373,14 +459,17 @@ int main() {
 
   if(method == 2) {
     bubble_sort(array, arr_size);
-    vector<Node*> leafNodes(ceil(arr_size / MAX));
+    int vector_size = ceil(static_cast<float>(arr_size) / static_cast<float>(MAX));
+    vector<Node*> leafNodes(vector_size);
     int count = 0;
 
-    for(int i = 0; i < ceil(arr_size / MAX); i++) {
+    for(int i = 0; i < vector_size; i++) {
       Node *newNode = new Node;
       
       for(int j = 0; j < MAX; j ++){
         if(count < arr_size) {
+          newNode->size = j+1;
+          newNode->IS_LEAF = true;
           newNode->key[j] = array[count];
           count++;
         }
@@ -388,6 +477,9 @@ int main() {
 
       leafNodes[i] = newNode;
     }
+    node.insertBottom(leafNodes);
+
+    node.display(node.getRoot());
 
   } else {
     // // debug
