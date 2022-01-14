@@ -14,7 +14,7 @@ int MAX = 3;
 class Node {
   friend class BPTree;
 
-   public:
+  public:
   Node();
   int *key, size, height;
   bool IS_LEAF;
@@ -28,7 +28,7 @@ class BPTree {
   Node* insertInternalBottom(int, Node *, Node *);
   Node *findParent(Node *, Node *);
 
-   public:
+  public:
   BPTree();
   void insert(int);
   void display(Node *);
@@ -189,7 +189,7 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     int i = 0, j;
     while (x >= virtualKey[i] && i < MAX)
       i++;
-    for (int j = MAX + 1; j > i; j--) {
+    for (int j = MAX; j > i; j--) {
       virtualKey[j] = virtualKey[j - 1];
     }
     virtualKey[i] = x;
@@ -200,7 +200,7 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
     // }
     // cout << "\n";
 
-    for (int j = MAX + 2; j > i + 1; j--) {
+    for (int j = MAX+1; j > i + 1; j--) {
       virtualPtr[j] = virtualPtr[j - 1];
     }
     virtualPtr[i + 1] = child;
@@ -231,7 +231,7 @@ void BPTree::insertInternal(int x, Node *cursor, Node *child) {
       newRoot->size = 1;
       root = newRoot;
     } else {
-      insertInternal(cursor->key[cursor->size], findParent(root, cursor), newInternal);
+      insertInternal(virtualKey[cursor->size], findParent(root, cursor), newInternal);
     }
   }
 }
@@ -472,5 +472,13 @@ int main() {
 	  node.display(node.getRoot());
   }
 
+
+  // bubble_sort(array, arr_size);
+
+  // cout << "\n";
+
+  // for(int i = 0; i < arr_size; i++) {
+  //   cout << array[i] << " ";
+  // }
 
 }
